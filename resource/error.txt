@@ -1,0 +1,9 @@
+rgb(255, 0, 119)
+.login:hover{
+    background-color: #394da5;
+}
+.quote:hover{
+    background-color: #394da5;
+}
+    max-width: 80%;
+   font-size: 40px;logo
