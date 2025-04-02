@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Interests</title>
+    <link rel="stylesheet" href="course.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Select Your Academic Interests</h2>
+        <div class="tags" id="tagsContainer">
+            <span class="tag" data-value="Artificial Intelligence & Machine Learning">Artificial Intelligence & Machine Learning</span>
+            <span class="tag" data-value="Cybersecurity & Ethical Hacking">Cybersecurity & Ethical Hacking</span>
+            <span class="tag" data-value="Software Development & Programming">Software Development & Programming</span>
+            <span class="tag" data-value="Web & Mobile App Development">Web & Mobile App Development</span>
+            <span class="tag" data-value="Game Development & Interactive Media">Game Development & Interactive Media</span>
+            <span class="tag" data-value="engineering">Engineering</span>
+            <span class="tag" data-value="Cloud Computing & DevOps">Cloud Computing & DevOps</span>
+            <span class="tag" data-value="Computer Networking & IT Support">Computer Networking & IT Support</span>
+            <span class="tag" data-value="Mechanical & Electrical Engineering">Data Science & Big Data Analytics</span>
+            <span class="tag" data-value="Robotics & Automation">Robotics & Automation</span>
+            <span class="tag" data-value="Civil & Structural Engineering">Civil & Structural Engineering</span>
+            <span class="tag" data-value="Psychology, Human Behavior & Personal Growth">Psychology, Human Behavior & Personal Growth</span>
+            <span class="tag" data-value="Leadership, Communication & Public Speaking">Leadership, Communication & Public Speaking</span>
+            <span class="tag" data-value="Writing, Blogging & Content Creation">Writing, Blogging & Content Creation</span>
+            <span class="tag" data-value="Photography, Video Editing & Animation">Photography, Video Editing & Animation</span>
+            <span class="tag" data-value="Graphic Design & UI/UX">Graphic Design & UI/UX</span>
+            <span class="tag" data-value="E-commerce & Online Business">E-commerce & Online Business</span>
+            <span class="tag" data-value="Finance, Investing & Accounting">Finance, Investing & Accounting</span>
+            <span class="tag" data-value="Marketing, Branding & Digital Advertising">Marketing, Branding & Digital Advertising</span>
+            <span class="tag" data-value="Entrepreneurship & Business Strategy">Entrepreneurship & Business Strategy</span>
+        </div>
+        <button id="submitBtn">Submit</button>
+    </div>
+
+    <script>
+        const tags = document.querySelectorAll(".tag");
+        const selectedTags = new Set();
+
+        tags.forEach(tag => {
+            tag.addEventListener("click", () => {
+                if (selectedTags.has(tag.dataset.value)) {
+                    selectedTags.delete(tag.dataset.value);
+                    tag.classList.remove("selected");
+                } else {
+                    selectedTags.add(tag.dataset.value);
+                    tag.classList.add("selected");
+                }
+            });
+        });
+
+        document.getElementById("submitBtn").addEventListener("click", function() {
+            if (selectedTags.size > 0) {
+                fetch("save_interests.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ interests: Array.from(selectedTags) })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    window.location.href = "home.html";
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    window.location.href = "home.html"; // Redirect to home even if there's an error
+                });
+            } else {
+                alert("Please select at least one interest.");
+            }
+        });
+    </script>
+</body>
+</html>
