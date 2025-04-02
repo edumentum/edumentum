@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Course Recommendation Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Font Awesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+    <!-- Custom CSS (Overrides Bootstrap) -->
+    <link rel="stylesheet" href="homepage.css">
+    
+</head>
+<body>
+    
+
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="/edumentum/Edmentum homepage.html">
+            <img class="w-auto h-8" width="auto" height="2rem" src="https://cdn.edmentum.com/edmentum/logo1.png" alt="Edmentum Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="solutionsDropdown" role="button" data-bs-toggle="dropdown">
+                        Solutions 
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Dual Diploma</a></li>
+                        <li><a class="dropdown-item" href="#">Course Credit</a></li>
+                        <li><a class="dropdown-item" href="#">Intervention</a></li>
+                        <li><a class="dropdown-item" href="#">Virtual Learning</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="researchDropdown" role="button" data-bs-toggle="dropdown">
+                        Research & Impact 
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/edumentum/Research_Impact/EfficacyResearch.html">Efficacy Research</a></li>
+                        <li><a class="dropdown-item" href="/edumentum/Research_Impact/PsychometricResearch.html">Psychometric Research</a></li>
+                        <li><a class="dropdown-item" href="/edumentum/Research_Impact/FoundationalResearch.html">Foundational Research</a></li>
+                        <li><a class="dropdown-item" href="/edumentum/Research_Impact/State_AgencyApproval.html">State and Agency Approvals</a></li>
+                        <li><a class="dropdown-item" href="/edumentum/Research_Impact/SuccessStories.html">Success Stories</a></li>
+                        <li><a class="dropdown-item" href="/edumentum/Research_Impact/TestimonialVideos.html">Testimonial Videos</a></li>
+
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown">
+                        Resources 
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Workbooks</a></li>
+                        <li><a class="dropdown-item" href="#">Toolkits</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="aboutUsDropdown" role="button" data-bs-toggle="dropdown">
+                        About Us 
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Leadership</a></li>
+                        <li><a class="dropdown-item" href="#">Newsroom</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <a href="/edumentum/GetAQuote.html" class="btn btn-danger me-2">Get a Quote</a>
+                <a href="/edumentum/ProductLogin.html" class="btn btn-outline-danger">Product Login</a>
+            </div>
+        </div>
+    </div>
+    
+</nav>
+
+   
+
+
+<main class="main-content">
+        
+    
+
+
+    <div class="container mt-5">
+        <div class="card shadow-lg border-0 rounded-4 p-4">
+            <h1 class="text-center text-danger me-2 fw-bold">
+                <i class="fas fa-robot"></i> AI Course Recommendation Bot
+            </h1>
+            
+            <form id="recommendation-form" class="mt-4">
+                <label for="description" class="fw-semibold">Describe your career path or project goal:</label>
+                <textarea id="description" name="description" class="form-control rounded-3 p-3" rows="4" placeholder="Type your goal here..."></textarea>
+                <button type="submit" class="btn btn-outline-danger me-2 mt-3 w-100 rounded-pill fw-bold">
+                    <i class="fas fa-search"></i> Get Recommended Courses
+                </button>
+                
+            </form>
+            
+            <h2 class="mt-4 text-center text-secondary">Recommended Courses</h2>
+            <div id="course-results" class="mt-3"></div>
+        </div>
+    </div>
+
+
+    <script>
+        document.getElementById("recommendation-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const description = document.getElementById("description").value;
+            const resultDiv = document.getElementById("course-results");
+            resultDiv.innerHTML = '<p class="text-info"><i class="fas fa-spinner fa-spin"></i> Fetching courses...</p>';
+
+            try {
+                const response = await fetch("http://10.132.232.92:8000/recommend_courses/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ description: description })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayCourses(data.recommended_courses);
+                } else {
+                    resultDiv.innerHTML = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i> Error: ${response.statusText}</p>`;
+                }
+            } catch (error) {
+                console.error("Error fetching course recommendations:", error);
+                resultDiv.innerHTML = '<p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Failed to fetch courses. Please try again.</p>';
+            }
+        });
+
+        function displayCourses(courses) {
+            const resultDiv = document.getElementById("course-results");
+            resultDiv.innerHTML = "";
+
+            if (courses.length === 0) {
+                resultDiv.innerHTML = "<p class='text-warning'>No courses found based on your description.</p>";
+                return;
+            }
+
+            const ul = document.createElement("ul");
+            ul.className = "list-group";
+            courses.forEach(course => {
+                const li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.innerHTML = `<strong>${course.course_name}</strong> 
+                                <a href="${course.link}" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i> Learn More
+                                </a>`;
+                ul.appendChild(li);
+            });
+            resultDiv.appendChild(ul);
+        }
+    </script>
+
+
+</main>
+
+    
+
+
+
+
+
+
+
+     <footer class="bg-black text-white" aria-labelledby="footer-heading">
+        <h2 id="footer-heading" class="sr-only">Footer</h2>
+        <div class="container mx-auto px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-20">
+            <div class="flex flex-col lg:grid grid-cols-1 lg:grid-cols-8 gap-4">
+                <div class="col-auto lg:col-span-1 pb-4 lg:pb-0">
+                                                    <a href="/edumentum/Edmentum homepage.html">
+                                        <img class="h-6 lg:h-auto w-auto" src="https://cdn.edmentum.com/edmentum/Edmentum-logo_white_small.png" alt="Edmentum">
+                    </a>
+                </div>
+                <div class="py-2 lg:py-0 order-2 sm:order-none">
+                    <h3 class="headline-h10">
+                                                <a href="/intl/solutions/" class="group text-white hover:text-ada-magenta transition duration-700">
+                                Solutions
+                                <span class="block w-0 group-hover:w-1/6 md:group-hover:w-2/3 transition-all duration-700 h-0.5 bg-ada-magenta"></span>
+                            </a>
+                                        </h3>
+                    <ul role="list" class="hidden sm:block my-2 space-y-2">
+                                                <li>
+                                <a href="/intl/solutions/dual-diploma/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Dual Diploma</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/course-credit" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Course Credit</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/intervention/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Intervention</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/virtual-learning/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Virtual Learning</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/career-connected-learning/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Career-Connected-Learning</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/math-achievement/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Math Achievement</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/reading-comprehension/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Reading &amp; Comprehension</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/test-readiness/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Test Readiness</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/multilingual-access/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Multilingual Access</a>
+                            </li>
+                            <li>
+                                <a href="/intl/solutions/summer-school/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Summer School</a>
+                            </li>
+                                        </ul>
+                </div>
+                <div class="py-2 lg:py-0 order-2 sm:order-none">
+                    <h3 class="headline-h10">
+                                                <a href="/intl/products/" class="group text-white hover:text-ada-magenta transition duration-700">
+                                Products &amp; Services
+                                <span class="block w-0 group-hover:w-2/6 md:group-hover:w-full transition-all duration-700 h-0.5 bg-ada-magenta"></span>
+                            </a>
+                                        </h3>
+                    <ul role="list" class="hidden sm:block my-2 space-y-2">
+                                                <li>
+                                <a href="/intl/products/courseware/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Courseware</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/apex-courses/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Apex Courses</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/calvert-learning/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Calvert Learning</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/exact-path/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Exact Path</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/tutorials/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Apex Tutorials</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/study-island/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Study Island</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/educationcity/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">EducationCity</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/edoptions-academy/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">EdOptions Academy</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/virtual-tutoring/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Virtual Tutoring</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/apex-learning-virtual-school/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Apex Learning Virtual School</a>
+                            </li>
+                            <li>
+                                <a href="/intl/products/professional-services/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Professional Services</a>
+                            </li>
+                            <li>
+                                <a href="/intl/curricula-catalog/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Curricula Catalog</a>
+                            </li>
+                                        </ul>
+                </div>
+                <div class="py-2 lg:py-0 order-2 sm:order-none">
+                    <h3 class="headline-h10">
+                                                <a href="/edumentum/Research_Impact/ResearchImpact.html" class="group text-white hover:text-ada-magenta transition duration-700">
+                                Research &amp; Impact
+                                <span class="block w-0 group-hover:w-2/6 md:group-hover:w-full transition-all duration-700 h-0.5 bg-ada-magenta"></span>
+                            </a>
+                                        </h3>
+                    <ul role="list" class="hidden sm:block my-2 space-y-2">
+                                                <li>
+                                <a href="/edumentum/Research_Impact/EfficacyResearch.html" class="body-b5 duration-300 ease-in-out hover:text-ada-magenta">Efficacy Research</a>
+                            </li>
+                            <li>
+                                <a href="/edumentum/Research_Impact/PsychometricResearch.html" class="body-b5 duration-300 ease-in-out hover:text-ada-magenta">Psychometric Research</a>
+                            </li>
+                            <li>
+                                <a href="/edumentum/Research_Impact/FoundationalResearch.html" class="body-b5 duration-300 ease-in-out hover:text-ada-magenta">Foundational Research</a>
+                            </li>
+                            <li>
+                                <a href="/edumentum/Research_Impact/State_AgencyApproval.html" class="body-b5 duration-300 ease-in-out hover:text-ada-magenta">State &amp; Agency Approvals</a>
+                            </li>
+                            <li>
+                                <a href="/edumentum/Research_Impact/SuccessStories.html" class="body-b5 duration-300 ease-in-out hover:text-ada-magenta">Success Stories</a>
+                            </li>
+                            <li>
+                                <a href="/edumentum/Research_Impact/TestimonialVideos.html" class="body-b5 duration-300 ease-in-out hover:text-ada-magenta">Testimonial Videos</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="py-2 lg:py-0 order-2 sm:order-none">
+                    <h3 class="headline-h10">
+                                                <a href="/intl/resources/" class="group text-white hover:text-ada-magenta transition duration-700">
+                                Resources
+                                <span class="block w-0 group-hover:w-1/6 md:group-hover:w-2/3 transition-all duration-700 h-0.5 bg-ada-magenta"></span>
+                            </a>
+                                        </h3>
+                    <ul role="list" class="hidden sm:block my-2 space-y-2">
+                                                <li>
+                                <a href="/intl/resources/workbooks/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Workbooks</a>
+                            </li>
+                            <li>
+                                <a href="/intl/resources/toolkits/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Toolkits</a>
+                            </li>
+                            <li>
+                                <a href="/intl/articles/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Articles</a>
+                            </li>
+                            <li>
+                                <a href="/intl/resources/events/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Events &amp; Webinars</a>
+                            </li>
+                                        </ul>
+                </div>
+                <div class="py-2 lg:py-0 order-2 sm:order-none">
+                    <h3 class="headline-h10">
+                                                <a href="/intl/about/" class="group text-white hover:text-ada-magenta transition duration-700">
+                                About
+                                <span class="block w-0 group-hover:w-1/6 md:group-hover:w-1/2 transition-all duration-700 h-0.5 bg-ada-magenta"></span>
+                            </a>
+                                        </h3>
+                    <ul role="list" class="hidden sm:block my-2 space-y-2">
+                                                <li>
+                                <a href="/intl/about/leadership/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Leadership</a>
+                            </li>
+                            <li>
+                                <a href="/intl/about/newsroom/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Newsroom</a>
+                            </li>
+                                                    <li>
+                                <a href="/intl/about/deib/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">DEIB</a>
+                            </li>
+                            <li>
+                                <a href="/intl/about/careers/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Careers</a>
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="py-2 lg:py-0 order-2 sm:order-none">
+                    <h3 class="headline-h10">
+                                                <a href="/edumentum/Technical_Support/Support.html" class="group text-white hover:text-ada-magenta transition duration-700">
+                                Technical Support
+                                <span class="block w-0 group-hover:w-2/6 md:group-hover:w-full transition-all duration-700 h-0.5 bg-ada-magenta"></span>
+                            </a>
+                                        </h3>
+                    <ul role="list" class="hidden sm:block my-2 space-y-2">
+                                                <li>
+                                <a href="/edumentum/Technical_Support/Integrations.html" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Integrations</a>
+                            </li>
+                            <li>
+                                <a href="/edumentum/Technical_Support/All-products.html" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta">Product Releases</a>
+                            </li>
+                                            <li>
+                            <a href="/edumentum/Technical_Support/Edmentum Status.html" class="flex body-b5 duration-300 ease-in-out hover:text-ada-magenta">Status
+                                <svg class="text-white duration-700 ease-in-out hover:text-ada-magenta" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <mask id="mask0_17_2631" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="18" height="18">
+            <rect width="18" height="18" fill="#D9D9D9"></rect>
+        </mask>
+        <g mask="url(#mask0_17_2631)">
+            <path d="M3 15.75V14.25H15V15.75H3ZM9 12.75L5.25 9L6.3 7.95L8.25 9.9V2.25H9.75V9.9L11.7 7.95L12.75 9L9 12.75Z" fill="black"></path>
+        </g>
+    </svg>
+    
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-auto lg:col-span-1 whitespace-nowrap pt-4 lg:pt-0 text-end order-1 sm:order-none -mt-20 sm:mt-0">
+                                        <a href="/edumentum/GetAQuote.html" class="button btn-magenta">Get a Quote</a>
+                                </div>
+            </div>
+    
+            <div class="text-white mt-8 border-t border-gray-80 pt-8">
+                <div class="lg:grid grid-cols-1 2xl:grid-cols-6 items-center">
+                    <div class="xl:col-span-4 2xl:col-span-3 block lg:flex">
+                        <div class="grid grid-cols-1 gap-x-2 sm:flex sm:py-2 sm:gap-x-6">
+                                                        <a href="/intl/contact/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta whitespace-nowrap">
+                                    Contact Us
+                                </a>
+                                                                                <a href="https://brandguides.brandfolder.com/edmentum" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta whitespace-nowrap pr-6">
+                                Brand Guidelines
+                            </a>
+                        </div>
+    
+                        <div class="grid grid-cols-1 gap-x-2 sm:flex sm:py-2 sm:gap-x-6">
+                                                        <a href="/intl/privacy-policy/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta lg:whitespace-nowrap">
+                                    Privacy Policy
+                                </a>
+                                <a href="/intl/cookie-notice/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta lg:whitespace-nowrap">
+                                    Cookie Notice
+                                </a>
+                                <a href="/intl/terms-of-use/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta lg:whitespace-nowrap">
+                                    Terms of Use
+                                </a>
+                                <a href="/intl/apex-learning-fl-disclosure-statement/" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta lg:whitespace-nowrap pr-6">
+                                    Florida Disclosure Statement
+                                </a>
+                                                </div>
+                        <div class="grid grid-cols-1 gap-x-2 sm:flex sm:py-2 sm:gap-x-6">
+                            <!--<a href="#" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta whitespace-nowrap">
+                                Sitemap
+                            </a>-->
+                            <a href="#" onclick="return window.Osano.cm.showDrawer();" class="body-b5 duration-700 ease-in-out hover:text-ada-magenta whitespace-nowrap">
+                                Data Preferences
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-span-2 xl:text-end">
+                        <p class="my-4 xl:mx-8 body-b4">© Edmentum, Inc. All Rights Reserved.</p>
+                    </div>
+                    <div>
+                        <div class="flex pt-2 2xl:pt-0 2xl:justify-end md:space-x-4 ">
+                            <a href="https://www.facebook.com/Edmentum" class="mr-2 lg:mr-0 duration-700 ease-in-out hover:text-ada-magenta" target="_blank">
+                                <span class="sr-only">Facebook</span>
+                                <svg fill="currentColor" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-143 145 512 512" xml:space="preserve">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <g>
+                                            <path d="M113,145c-141.4,0-256,114.6-256,256s114.6,256,256,256s256-114.6,256-256S254.4,145,113,145z M272.8,560.7 c-20.8,20.8-44.9,37.1-71.8,48.4c-27.8,11.8-57.4,17.7-88,17.7c-30.5,0-60.1-6-88-17.7c-26.9-11.4-51.1-27.7-71.8-48.4 c-20.8-20.8-37.1-44.9-48.4-71.8C-107,461.1-113,431.5-113,401s6-60.1,17.7-88c11.4-26.9,27.7-51.1,48.4-71.8 c20.9-20.8,45-37.1,71.9-48.5C52.9,181,82.5,175,113,175s60.1,6,88,17.7c26.9,11.4,51.1,27.7,71.8,48.4 c20.8,20.8,37.1,44.9,48.4,71.8c11.8,27.8,17.7,57.4,17.7,88c0,30.5-6,60.1-17.7,88C309.8,515.8,293.5,540,272.8,560.7z"></path>
+                                            <path d="M146.8,313.7c10.3,0,21.3,3.2,21.3,3.2l6.6-39.2c0,0-14-4.8-47.4-4.8c-20.5,0-32.4,7.8-41.1,19.3 c-8.2,10.9-8.5,28.4-8.5,39.7v25.7H51.2v38.3h26.5v133h49.6v-133h39.3l2.9-38.3h-42.2v-29.9C127.3,317.4,136.5,313.7,146.8,313.7z"></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </a>
+                            <a href="https://www.instagram.com/edmentum/" class="mr-2 lg:mr-0 duration-700 ease-in-out hover:text-ada-magenta" target="_blank">
+                                <span class="sr-only">Instagram</span>
+                                <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 50 50">
+                                <path d="M 16 3 C 8.8324839 3 3 8.8324839 3 16 L 3 34 C 3 41.167516 8.8324839 47 16 47 L 34 47 C 41.167516 47 47 41.167516 47 34 L 47 16 C 47 8.8324839 41.167516 3 34 3 L 16 3 z M 16 5 L 34 5 C 40.086484 5 45 9.9135161 45 16 L 45 34 C 45 40.086484 40.086484 45 34 45 L 16 45 C 9.9135161 45 5 40.086484 5 34 L 5 16 C 5 9.9135161 9.9135161 5 16 5 z M 37 11 A 2 2 0 0 0 35 13 A 2 2 0 0 0 37 15 A 2 2 0 0 0 39 13 A 2 2 0 0 0 37 11 z M 25 14 C 18.936712 14 14 18.936712 14 25 C 14 31.063288 18.936712 36 25 36 C 31.063288 36 36 31.063288 36 25 C 36 18.936712 31.063288 14 25 14 z M 25 16 C 29.982407 16 34 20.017593 34 25 C 34 29.982407 29.982407 34 25 34 C 20.017593 34 16 29.982407 16 25 C 16 20.017593 20.017593 16 25 16 z"></path>
+                                </svg>
+                            </a>
+                            <a href="https://www.linkedin.com/company/edmentum" class="mx-2 duration-700 ease-in-out hover:text-ada-magenta" target="_blank">
+                                <span class="sr-only">Linkedin</span>
+                                <svg fill="currentColor" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-143 145 512 512" xml:space="preserve">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <g>
+                                            <path d="M113,145c-141.4,0-256,114.6-256,256s114.6,256,256,256s256-114.6,256-256S254.4,145,113,145z M272.8,560.7 c-20.8,20.8-44.9,37.1-71.8,48.4c-27.8,11.8-57.4,17.7-88,17.7c-30.5,0-60.1-6-88-17.7c-26.9-11.4-51.1-27.7-71.8-48.4 c-20.8-20.8-37.1-44.9-48.4-71.8C-107,461.1-113,431.5-113,401s6-60.1,17.7-88c11.4-26.9,27.7-51.1,48.4-71.8 c20.9-20.8,45-37.1,71.9-48.5C52.9,181,82.5,175,113,175s60.1,6,88,17.7c26.9,11.4,51.1,27.7,71.8,48.4 c20.8,20.8,37.1,44.9,48.4,71.8c11.8,27.8,17.7,57.4,17.7,88c0,30.5-6,60.1-17.7,88C309.8,515.8,293.5,540,272.8,560.7z"></path>
+                                            <rect x="-8.5" y="348.4" width="49.9" height="159.7"></rect>
+                                            <path d="M15.4,273c-18.4,0-30.5,11.9-30.5,27.7c0,15.5,11.7,27.7,29.8,27.7h0.4c18.8,0,30.5-12.3,30.4-27.7 C45.1,284.9,33.8,273,15.4,273z"></path>
+                                            <path d="M177.7,346.9c-28.6,0-46.5,15.6-49.8,26.6v-25.1H71.8c0.7,13.3,0,159.7,0,159.7h56.1v-86.3c0-4.9-0.2-9.7,1.2-13.1 c3.8-9.6,12.1-19.6,27-19.6c19.5,0,28.3,14.8,28.3,36.4v82.6H241v-88.8C241,369.9,213.2,346.9,177.7,346.9z"></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </a>
+                            <a href="https://www.youtube.com/user/edmentum" class="mx-2 duration-700 ease-in-out hover:text-ada-magenta" target="_blank">
+                                <span class="sr-only">Youtube</span>
+                                <svg fill="currentColor" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-143 145 512 512" xml:space="preserve">
+                                    <g id="SVGRepo_iconCarrier">
+                                        <g>
+                                            <path d="M113,145c-141.4,0-256,114.6-256,256s114.6,256,256,256s256-114.6,256-256S254.4,145,113,145z M272.8,560.7 c-20.8,20.8-44.9,37.1-71.8,48.4c-27.8,11.8-57.4,17.7-88,17.7c-30.5,0-60.1-6-88-17.7c-26.9-11.4-51.1-27.7-71.8-48.4 c-20.8-20.8-37.1-44.9-48.4-71.8C-107,461.1-113,431.5-113,401s6-60.1,17.7-88c11.4-26.9,27.7-51.1,48.4-71.8 c20.9-20.8,45-37.1,71.9-48.5C52.9,181,82.5,175,113,175s60.1,6,88,17.7c26.9,11.4,51.1,27.7,71.8,48.4 c20.8,20.8,37.1,44.9,48.4,71.8c11.8,27.8,17.7,57.4,17.7,88c0,30.5-6,60.1-17.7,88C309.8,515.8,293.5,540,272.8,560.7z"></path>
+                                            <path d="M196.9,311.2H29.1c0,0-44.1,0-44.1,44.1v91.5c0,0,0,44.1,44.1,44.1h167.8c0,0,44.1,0,44.1-44.1v-91.5 C241,355.3,241,311.2,196.9,311.2z M78.9,450.3v-98.5l83.8,49.3L78.9,450.3z"></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </a>
+                            <a href="https://twitter.com/edmentum" class="ml-2 duration-700 ease-in-out hover:text-ada-magenta" target="_blank">
+                                <span class="sr-only">X</span>
+                                <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0,0,256,256">
+                                    <g transform="translate(19.2,19.2) scale(0.85,0.85)">
+                                        <g fill="none" fill-rule="nonzero" stroke="currentColor" stroke-width="8.53333" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                            <path d="M128,273.04044c-80.10362,0 -145.04044,-64.93682 -145.04044,-145.04044v0c0,-80.10362 64.93682,-145.04044 145.04044,-145.04044v0c80.10362,0 145.04044,64.93682 145.04044,145.04044v0c0,80.10362 -64.93682,145.04044 -145.04044,145.04044z" id="shape"></path>
+                                        </g>
+                                        <g fill="currentColor" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                            <g transform="scale(8.53333,8.53333)">
+                                                <path d="M26.37,26l-8.795,-12.822l0.015,0.012l7.93,-9.19h-2.65l-6.46,7.48l-5.13,-7.48h-6.95l8.211,11.971l-0.001,-0.001l-8.66,10.03h2.65l7.182,-8.322l5.708,8.322zM10.23,6l12.34,18h-2.1l-12.35,-18z"></path>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
